@@ -29,17 +29,17 @@ paths:
           description: Path of the folder to be listed. Must match regex "(/\S+)"
           required: true
           type: string
+          format: path
         - name: recursive
           in: query
           description: If true result will contain content of all folders within path
-          required: false
+          required: true
           type: boolean
-          defaultValue: false
       tags:
         - Files
       responses:
         200:
-          description: An array of products
+          description: A FolderContent object
           schema:
             $ref: '#/definitions/FolderContent'
         default:
@@ -60,7 +60,10 @@ paths:
       tags:
         - Files
       responses:
-        
+        200:
+          description: A FileMetadata object representing uploaded file
+          schema:
+            $ref: '#/definitions/FileMetadata'
   /estimates/price:
     get:
       summary: Price Estimates
@@ -157,7 +160,7 @@ definitions:
     type: object
     properties:
       folder_id:
-        type: int
+        type: integer
         format: int64
         description: id of the resouce
       name:
@@ -170,17 +173,17 @@ definitions:
         type: string
         description: printable version of path to this resource
       parent_folder_id:
-        type: int
+        type: integer
         format: int64
         description: id of the parent folder
       server_created_at:
-        type: dateTime
+        type: string
         description: format="%Y-%m-%dT%H:%M:%SZ" date and time of creation of the file in the server side see https://xml2rfc.tools.ietf.org/public/rfc/html/rfc3339.html#anchor14
   FileMetadata:
     type: object
     properties:
       file_id:
-        type: int
+        type: integer
         format: int64
         description: id of the resouce
       name:
@@ -193,18 +196,18 @@ definitions:
         type: string
         description: printable version of path to this resource
       enclosing_folder_id:
-        type: int
+        type: integer
         format: int64
         description: id of the folder directly containing this file
       size:
-        type: int
+        type: integer
         format: int64
         description: file size in bytes
       server_created_at:
-        type: dateTime
+        type: string
         description: format="%Y-%m-%dT%H:%M:%SZ" date and time of creation of the file in the server side see https://xml2rfc.tools.ietf.org/public/rfc/html/rfc3339.html#anchor14
       server_changed_at:
-        type: dateTime
+        type: string
         description: format="%Y-%m-%dT%H:%M:%SZ" date and time of last modification of the file in the server side see https://xml2rfc.tools.ietf.org/public/rfc/html/rfc3339.html#anchor14
   FolderContent:
     type: object
