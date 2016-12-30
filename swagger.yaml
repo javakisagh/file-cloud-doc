@@ -283,7 +283,7 @@ paths:
     get:
       tags:
         - Users
-        - Authorization
+        - Authentication
       description: |
         Retrives session id after successful authentication
       parameters:
@@ -380,13 +380,3 @@ definitions:
         items:
           $ref: '#/definitions/FileMetadata'
         description: Metadata of files included  
-  Error:
-    type: object
-    properties:
-      code:
-        type: integer
-        format: int32
-      message:
-        type: string
-      fields:
-        type: string

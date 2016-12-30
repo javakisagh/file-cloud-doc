@@ -31,11 +31,12 @@ def append(File dir) {
 }
 
 ext {
-    //buildDir = 'build/'
-    swaggerBaseDir = append buildDir with 'swagger/'
-    swaggerUIDir = append swaggerBaseDir with 'swagger-ui'
-    swaggerEditorDir = append swaggerBaseDir with 'swagger-editor'
-    swaggerEditorZip = 'swagger-editor.zip'
+    swaggerBaseDir = append buildDir with "swagger/"
+    swaggerUIDir = append swaggerBaseDir with "swagger-ui"
+    swaggerUIDistDir = append swaggerUIDir with "dist-build"
+    swaggerEditorDir = append swaggerBaseDir with "swagger-editor"
+    swaggerEditorZip = "swagger-editor.zip"
+    swaggerJson = "swagger.json"
 }
 
 task createBuildDir(type: CrossPlatformExec) {
@@ -56,7 +57,7 @@ task wgetSwaggerEditor(type: CrossPlatformExec) {
     outputs.file(swaggerEditorZipPath)
     
     workingDir buildDir
-    //commandLine 'ls'
+ 
     commandLine 'wget', 'https://github.com/swagger-api/swagger-editor/releases/download/v2.10.4/swagger-editor.zip'
     
     dependsOn createBuildDir
@@ -81,18 +82,12 @@ task unzipSwaggerEditor(type: Copy) {
     dependsOn createSwaggerDir
 }
 
-/*task cloneSwaggerUI(type: GitClone) {
-    def destination = file("$buildDir/swagger/swagger-ui")
-    uri = "https://github.com/swagger-api/swagger-ui.git"
-    destinationPath = destination
-    bare = false
-    enabled = !destination.exists()
-}*/
-
 task cloneSwaggerUI(type: CrossPlatformExec) {
     def swaggerUI = 'swagger-ui/'
     inputs.file(createSwaggerDir)
-    outputs.dir(swaggerUIDir)
+   // outputs.dir(swaggerUIDir)
+    outputs.upToDateWhen { true }
+        //swaggerUIDir.exists() && swaggerUIDir.list().length > 0
     
     def uri = "https://github.com/swagger-api/swagger-ui.git"
     
@@ -100,16 +95,68 @@ task cloneSwaggerUI(type: CrossPlatformExec) {
     commandLine 'git','clone',uri,swaggerUI
 }
 
-task replaceSwaggerUrl(type: CrossPlatformExec) {
-     inputs.file(cloneSwaggerUI)
+task swaggerUIcopyDist(type: Copy) {
+
+     def wokringDir = append swaggerUIDir with "dist"
+     def indexHtml = append wokringDir with "index.html"
+     def destDir = append swaggerUIDir with "dist-build"
      
-     workingDir swaggerUIDir
-     def pattern = /http:\/\/petstore\.swagger\.io\/v2\/swagger\.json/
-     def replacement = ''
-     commandLine "sed", "-i", "s|$pattern|$replacement|g","dist/index.html"
+     inputs.file cloneSwaggerUI
+     outputs.dir destDir
+     //outputs.upToDateWhen { false }
+     
+     from (wokringDir) { 
+         include "**/*"
+     }
+     into destDir
+     
+     exclude 'index.html'
 }
 
-task addSwaggerSpecContent(type: CrossPlatformExec) {
+task swaggerUIcreateIndexHtmlCopy(type: Copy) {
+
+     def workingFile = append swaggerUIDir with "dist/index.html"
+     def destDir = append swaggerUIDir with "dist-build"
+     def destFile = append destDir with "index.html"
+     
+     inputs.file cloneSwaggerUI
+     outputs.file destFile
+     
+     
+     def urlPattern = /http:\/\/petstore\.swagger\.io\/v2\/swagger\.json/
+     def urlReplacement = ''
+     
+     def newLine = System.getProperty("line.separator")
+     
+     
+     from workingFile
+     into destDir
+     
+     filter {
+         it.replaceAll(urlPattern,urlReplacement)
+     }
+     
+     def windowPattern = "window.swaggerUi = new SwaggerUi({"
+     def windowAppend = "        spec: spec,"
+     filter {
+     	 if (it.trim().startsWith(windowPattern)) {
+     	     it+newLine+windowAppend
+     	 } else 
+     	     it
+     }
+     
+     def jsonSpecContent = file(swaggerJson).text
+     def jsonPrepend = "      var spec = $jsonSpecContent;" 
+     
+     filter {
+     	 if (it.trim().startsWith(windowPattern)) {
+     	     jsonPrepend+newLine+it
+     	 } else 
+     	     it
+     }
+}
+
+/*task addSwaggerSpecContent(type: CrossPlatformExec) {
      inputs.file(cloneSwaggerUI)
 
      workingDir swaggerUIDir
@@ -132,23 +179,28 @@ task addSwaggerSpec(type: CrossPlatformExec) {
      def replacement = "spec = spec,"
      commandLine  "sed", "-i", "/$pattern/a $replacement", "dist/index.html"
 //     commandLine  'sed', '/window\.swaggerUi = new SwaggerUi/a spec = spec,', "dist/index.html"
-}
+}*/
 
 
 
 task runSwaggerUI(type: CrossPlatformExec) {
     inputs.file(cloneSwaggerUI)
+    outputs.upToDateWhen { false }
     dependsOn cloneSwaggerUI
         
-    dependsOn replaceSwaggerUrl
-    dependsOn addSwaggerSpecContent
-    dependsOn addSwaggerSpec
+    dependsOn swaggerUIcopyDist
+    dependsOn swaggerUIcreateIndexHtmlCopy
     
-    workingDir swaggerUIDir
+    workingDir swaggerUIDistDir
     
-    def uri = append swaggerUIDir with 'dist/index.html' toURI()
-    commandLine 'x-www-browser',uri
+    def uri = append swaggerUIDistDir with 'index.html' toURI()
+    commandLine 'xdg-open',uri
+}
 
+task clean(type: CrossPlatformExec) {
+    workingDir buildDir
+    
+    commandLine 'rm','-rf',buildDir
 }
 
 task p << {
