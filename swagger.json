@@ -42,8 +42,8 @@
                         "type": "boolean"
                     },
                     {
-                        "name": "session",
-                        "in": "query",
+                        "name": "JSESSIONID",
+                        "in": "header",
                         "type": "string",
                         "format": "16 byte string returned by /users/access"
                     }
@@ -96,10 +96,9 @@
                         }
                     },
                     {
-                        "name": "session",
-                        "in": "query",
+                        "name": "JSESSIONID",
+                        "in": "header",
                         "type": "string",
-                        "required": true,
                         "format": "16 byte string returned by /users/access"
                     }
                 ],
@@ -139,8 +138,8 @@
                         "type": "string"
                     },
                     {
-                        "name": "session",
-                        "in": "query",
+                        "name": "JSESSIONID",
+                        "in": "header",
                         "type": "string",
                         "format": "16 byte string returned by /users/access"
                     }
@@ -182,8 +181,8 @@
                         "type": "string"
                     },
                     {
-                        "name": "session",
-                        "in": "query",
+                        "name": "JSESSIONID",
+                        "in": "header",
                         "type": "string",
                         "format": "16 byte string returned by /users/access"
                     }
@@ -226,8 +225,8 @@
                         "type": "string"
                     },
                     {
-                        "name": "session",
-                        "in": "query",
+                        "name": "JSESSIONID",
+                        "in": "header",
                         "type": "string",
                         "format": "16 byte string returned by /users/access"
                     }
@@ -264,8 +263,8 @@
                         "type": "string"
                     },
                     {
-                        "name": "session",
-                        "in": "query",
+                        "name": "JSESSIONID",
+                        "in": "header",
                         "type": "string",
                         "format": "16 byte string returned by /users/access"
                     }
@@ -306,8 +305,8 @@
                         "type": "string"
                     },
                     {
-                        "name": "session",
-                        "in": "query",
+                        "name": "JSESSIONID",
+                        "in": "header",
                         "type": "string",
                         "format": "16 byte string returned by /users/access"
                     }
@@ -341,8 +340,8 @@
                         "type": "string"
                     },
                     {
-                        "name": "session",
-                        "in": "query",
+                        "name": "JSESSIONID",
+                        "in": "header",
                         "type": "string",
                         "format": "16 byte string returned by /users/access"
                     }
@@ -525,10 +524,7 @@
                 },
                 "user_pass": {
                     "type": "string",
-                    "items": {
-                        "$ref": "#/definitions/FileMetadata"
-                    },
-                    "description": "Metadata of files included"
+                    "description": "user password"
                 }
             }
         }
