@@ -39,8 +39,8 @@ paths:
           description: If true result will contain content of all folders within path
           required: true
           type: boolean
-        - name: session
-          in: query
+        - name: JSESSIONID
+          in: header
           type: string
           format: 16 byte string returned by /users/access 
       responses:
@@ -76,10 +76,9 @@ paths:
           schema:
             type: string
             format: binary
-        - name: session
-          in: query
+        - name: JSESSIONID
+          in: header
           type: string
-          required: true
           format: 16 byte string returned by /users/access 
       responses:
         201:
@@ -106,8 +105,8 @@ paths:
           description: Path of the file where data should be stored.
           required: true
           type: string
-        - name: session
-          in: query
+        - name: JSESSIONID
+          in: header
           type: string
           format: 16 byte string returned by /users/access 
       responses:
@@ -136,8 +135,8 @@ paths:
           description: Path of the file.
           required: true
           type: string
-        - name: session
-          in: query
+        - name: JSESSIONID
+          in: header
           type: string
           format: 16 byte string returned by /users/access 
       responses:
@@ -166,8 +165,8 @@ paths:
           description: new name
           required: true
           type: string
-        - name: session
-          in: query
+        - name: JSESSIONID
+          in: header
           type: string
           format: 16 byte string returned by /users/access 
       responses:
@@ -192,8 +191,8 @@ paths:
           description: Path of the file/directory to be removed
           required: true
           type: string
-        - name: session
-          in: query
+        - name: JSESSIONID
+          in: header
           type: string
           format: 16 byte string returned by /users/access 
       responses:
@@ -221,8 +220,8 @@ paths:
           description: new directory where file is to be stored
           required: true
           type: string
-        - name: session
-          in: query
+        - name: JSESSIONID
+          in: header
           type: string
           format: 16 byte string returned by /users/access 
       responses:
@@ -245,8 +244,8 @@ paths:
           description: Path to the new directory. 
           required: true
           type: string
-        - name: session
-          in: query
+        - name: JSESSIONID
+          in: header
           type: string
           format: 16 byte string returned by /users/access 
       responses:
@@ -377,6 +376,4 @@ definitions:
         description: user login
       user_pass:
         type: string
-        items:
-          $ref: '#/definitions/FileMetadata'
-        description: Metadata of files included  
+        description: user password  
